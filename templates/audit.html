@@ -1,0 +1,58 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Trail | TrustVault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🔐 TrustVault</h1>
+        <p>Document Activity Audit Trail</p>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h2>My Activity History</h2>
+            <p>Recent actions recorded for your account.</p>
+
+            {% if logs %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>Date and Time (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                            <tr>
+                                <td>{{ log.action }}</td>
+                                <td>{{ log.details }}</td>
+                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No activity recorded yet. Upload or download a document to create an entry.</p>
+            {% endif %}
+
+            <p><a href="{{ url_for('documents') }}">My Documents</a></p>
+            <p><a href="{{ url_for('home') }}">Home</a></p>
+
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit">Logout</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>TrustVault | Secure Document Sharing</p>
+    </footer>
+</body>
+</html>
+```

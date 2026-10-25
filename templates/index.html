@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Secure Document Sharing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🔐 TrustVault</h1>
+        <p>Secure Document Sharing with a Real Audit Trail</p>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h2>Welcome to TrustVault</h2>
+            <p>Upload and manage your documents securely.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if current_user.is_authenticated %}
+                <h3>Welcome, {{ current_user.username }}!</h3>
+                <p>Your account is active.</p>
+
+                <p>
+                    <a href="{{ url_for('documents') }}">My Documents</a>
+                </p>
+
+                <form method="POST" action="{{ url_for('logout') }}">
+                    <button type="submit">Logout</button>
+                </form>
+            {% else %}
+                <p><a href="{{ url_for('register') }}">Create Account</a></p>
+                <p><a href="{{ url_for('login') }}">Login</a></p>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>TrustVault | Secure Document Management</p>
+    </footer>
+</body>
+</html>

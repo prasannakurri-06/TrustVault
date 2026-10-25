@@ -1,0 +1,63 @@
+# ==========================================
+# TrustVault - Git Ignore Rules
+# ==========================================
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+.trustvault_secret_key
+*.pem
+*.key
+
+# SQLite databases and backups
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Private uploaded documents
+uploads/*
+!uploads/.gitkeep
+
+# Local application backup
+app_backup.txt
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Other local backup files
+*.bak
+*.backup

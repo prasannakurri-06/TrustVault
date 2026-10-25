@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Documents | TrustVault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🔐 TrustVault</h1>
+        <p>Secure Document Management</p>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h2>My Documents</h2>
+            <p>Welcome, {{ current_user.username }}!</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p role="status">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h3>Upload a Document</h3>
+
+            <form method="POST"
+                  action="{{ url_for('documents') }}"
+                  enctype="multipart/form-data">
+
+                <label for="document">Choose a file</label><br>
+                <input
+                    id="document"
+                    name="document"
+                    type="file"
+                    accept=".pdf,.txt,.png,.jpg,.jpeg,.docx"
+                    required
+                ><br><br>
+
+                <button type="submit">Upload Document</button>
+            </form>
+
+            <h3>My Uploaded Files</h3>
+
+            {% if documents %}
+                {% for document in documents %}
+                    <article class="document-card">
+                        <h4>{{ document.original_name }}</h4>
+
+                        <p>
+                            <a href="{{ url_for('download_document', document_id=document.id) }}">
+                                Download Document
+                            </a>
+                        </p>
+
+                        <h4>Share Document</h4>
+
+                        <form method="POST"
+                              action="{{ url_for('share_document', document_id=document.id) }}">
+
+                            <label for="username-{{ document.id }}">
+                                Recipient Username
+                            </label><br>
+
+                            <input
+                                id="username-{{ document.id }}"
+                                type="text"
+                                name="username"
+                                placeholder="Enter registered username"
+                                required
+                            ><br><br>
+
+                            <label for="permission-{{ document.id }}">
+                                Permission
+                            </label><br>
+
+                            <select
+                                id="permission-{{ document.id }}"
+                                name="permission"
+                                required
+                            >
+                                <option value="read">Read</option>
+                                <option value="edit">Edit</option>
+                            </select><br><br>
+
+                            <button type="submit">Grant Access</button>
+                        </form>
+
+                        <h4>Manage Shared Access</h4>
+
+                        {% set ns = namespace(found=false) %}
+
+                        {% for share in document.shares %}
+                            {% if share.owner_id == current_user.id %}
+                                {% set ns.found = true %}
+
+                                <div class="shared-user">
+                                    <p>
+                                        Shared with:
+                                        {{ share.recipient.username
+                                           if share.recipient
+                                           else 'User ID ' ~ share.shared_with_id }}
+                                    </p>
+
+                                    <p>Permission: {{ share.permission|capitalize }}</p>
+
+                                    <form method="POST"
+                                          action="{{ url_for('revoke_share',
+                                              document_id=document.id,
+                                              user_id=share.shared_with_id) }}">
+
+                                        <button type="submit">
+                                            Revoke Access
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if not ns.found %}
+                            <p>This document has not been shared yet.</p>
+                        {% endif %}
+                    </article>
+                    <hr>
+                {% endfor %}
+            {% else %}
+                <p>No documents uploaded yet.</p>
+            {% endif %}
+
+            <h3>Documents Shared With Me</h3>
+
+            {% if shared_documents %}
+                <ul>
+                    {% for document in shared_documents %}
+                        <li>
+                            {{ document.original_name }}
+                            —
+                            <a href="{{ url_for('download_document',
+                                document_id=document.id) }}">
+                                Download
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No documents have been shared with you.</p>
+            {% endif %}
+
+            <p><a href="{{ url_for('audit_trail') }}">View Audit Trail</a></p>
+            <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit">Logout</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>TrustVault | Secure Document Sharing</p>
+    </footer>
+</body>
+</html>
